@@ -12,13 +12,13 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyAW-a4vyIuDL59hHlM8hAJ_bhAB0W6Wxn8",
-        appId: "1:125160059156:web:8319abf4cf70c3ba5ad201",
-        messagingSenderId: "125160059156",
-        databaseURL: "https://picket-9e4f2-default-rtdb.firebaseio.com",
-        projectId: "picket-9e4f2",
-        storageBucket: "picket-9e4f2.appspot.com",
-        authDomain: "picket-9e4f2.firebaseapp.com",
+        apiKey: "AIzaSyAsRf-pXeF_Dxruc3DblUUTDfkpbJTo7Z8",
+  authDomain: "agricole-3abdf.firebaseapp.com",
+  projectId: "agricole-3abdf",
+  storageBucket: "agricole-3abdf.appspot.com",
+  messagingSenderId: "189627820796",
+  appId: "1:189627820796:web:552bf968603616cedc8579",
+  measurementId: "G-HF3ZC8KX81",
       ),
     );
   } else {

@@ -12,6 +12,42 @@ class ChartPage extends StatefulWidget {
 class _ChartPageState extends State<ChartPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  List<ChartData> temperatureData = [];
+  List<ChartData> humidityData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChartData();
+  }
+
+  void _loadChartData() {
+    _firestore.collection('weather_data').snapshots().listen((snapshot) {
+      print('Number of documents: ${snapshot.docs.length}');
+      temperatureData.clear();
+      humidityData.clear();
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final timestamp = data['timestamp'] as Timestamp?;
+        if (timestamp != null) {
+          final timestampValue = timestamp.millisecondsSinceEpoch.toDouble();
+
+          // Check if 'temperature' and 'humidity' are not null before adding them to the list
+          final temperature = data['temperature'] as double?;
+          final humidity = data['humidity'] as double?;
+
+          if (temperature != null && humidity != null) {
+            temperatureData.add(ChartData(timestampValue, temperature));
+            humidityData.add(ChartData(timestampValue, humidity));
+          }
+        }
+      }
+
+      setState(() {}); // Rebuild the widget with updated data
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,24 +61,18 @@ class _ChartPageState extends State<ChartPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'Temperature and Humidity Chart',
+                'Temperature Chart',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              FutureBuilder(
-                future: _fetchChartData(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Text('Erreur lors du chargement des données.');
-                    } else {
-                      return _buildChart(snapshot.data?['temperature'], snapshot.data?['humidity']);
-                    }
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
+              buildLineChart(temperatureData),
+              const SizedBox(height: 20),
+              const Text(
+                'Humidity Chart',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
+              const SizedBox(height: 10),
+              buildLineChart(humidityData),
             ],
           ),
         ),
@@ -50,69 +80,20 @@ class _ChartPageState extends State<ChartPage> {
     );
   }
 
-  Future<Map<String, List<ChartData>>> _fetchChartData() async {
-    final snapshot = await _firestore.collection('weather_data').get();
-
-    print('Number of documents: ${snapshot.docs.length}');
-
-    List<ChartData> temperatureData = [];
-    List<ChartData> humidityData = [];
-
-    for (final doc in snapshot.docs) {
-      print('Document Name: ${doc.id}, Data: ${doc.data()}');
-
-      final data = doc.data() as Map<String, dynamic>;
-      final timestamp = data['timestamp'] as Timestamp?;
-      final value = data['value'] as double?;
-
-      if (timestamp != null && value != null) {
-        final timestampValue = timestamp.millisecondsSinceEpoch.toDouble();
-        print('Timestamp: $timestampValue, Value: $value');
-
-        if (doc.id == 'temperature') {
-          temperatureData.add(ChartData(timestampValue, value));
-        } else if (doc.id == 'humidity') {
-          humidityData.add(ChartData(timestampValue, value));
-        }
-      }
-    }
-
-    return {'temperature': temperatureData, 'humidity': humidityData};
-  }
-
- Widget _buildChart(List<ChartData>? temperatureData, List<ChartData>? humidityData) {
-  if (temperatureData == null || humidityData == null) {
-    // Gérer le cas où les données sont nulles
-    return Text('Aucune donnée disponible.');
-  }
-
-  return SizedBox(
-    height: 300,
-    child: SfCartesianChart(
-      key: UniqueKey(),
+  SfCartesianChart buildLineChart(List<ChartData> data) {
+    return SfCartesianChart(
       primaryXAxis: NumericAxis(),
       primaryYAxis: NumericAxis(),
       series: <LineSeries<ChartData, double>>[
         LineSeries<ChartData, double>(
-          dataSource: temperatureData,
+          dataSource: data,
           xValueMapper: (ChartData chartData, _) => chartData.timestamp,
           yValueMapper: (ChartData chartData, _) => chartData.value,
-          name: 'Temperature',
-          color: Colors.red,
-        ),
-        LineSeries<ChartData, double>(
-          dataSource: humidityData,
-          xValueMapper: (ChartData chartData, _) => chartData.timestamp,
-          yValueMapper: (ChartData chartData, _) => chartData.value,
-          name: 'Humidity',
-          color: Colors.blue,
+          dataLabelSettings: DataLabelSettings(isVisible: true), // Show data labels
         ),
       ],
-      legend: Legend(isVisible: true),
-    ),
-  );
-}
-
+    );
+  }
 }
 
 class ChartData {
