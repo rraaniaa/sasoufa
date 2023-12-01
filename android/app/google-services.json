@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "125160059156",
+    "firebase_url": "https://picket-9e4f2-default-rtdb.firebaseio.com",
+    "project_id": "picket-9e4f2",
+    "storage_bucket": "picket-9e4f2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125160059156:android:8a009bf57eb8167f5ad201",
+        "android_client_info": {
+          "package_name": "com.example.picket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCzNRIPFyQyCio8GxRh2pIU9nanH0wDRk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125160059156:android:a16065561719103a5ad201",
+        "android_client_info": {
+          "package_name": "com.example.picket_terre"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCzNRIPFyQyCio8GxRh2pIU9nanH0wDRk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
